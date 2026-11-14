@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TruthLens - National Hackathon Presentation Deck</title>
+<style>
+  :root {
+    --bg-navy: #0A1128;
+    --card-navy: #001F54;
+    --card-border: #034078;
+    --accent-cyan: #00E5FF;
+    --accent-blue: #1282A2;
+    --text-white: #FFFFFF;
+    --text-muted: #94A3B8;
+    --tag-real: #10B981;
+    --tag-fake: #EF4444;
+    --tag-uncertain: #F59E0B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+  body { background-color: #030712; color: var(--text-white); display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 20px; }
+  
+  .deck-container {
+    width: 100%;
+    max-width: 1100px;
+    background: var(--bg-navy);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 229, 255, 0.1);
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 16 / 9;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .slide {
+    display: none;
+    width: 100%;
+    height: 100%;
+    padding: 40px 50px;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  .slide.active { display: flex; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .slide-header { margin-bottom: 20px; }
+  .slide-tag { color: var(--accent-cyan); font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .slide-title { font-size: 32px; font-weight: 800; color: #FFFFFF; }
+  .slide-subtitle { color: var(--text-muted); font-size: 15px; margin-top: 4px; }
+
+  .slide-content { flex: 1; display: flex; gap: 20px; align-items: stretch; justify-content: center; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: 100%; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
+  .grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; width: 100%; }
+
+  .card {
+    background: var(--card-navy);
+    border: 1px solid rgba(0, 229, 255, 0.25);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .card:hover { border-color: var(--accent-cyan); transform: translateY(-2px); }
+  .card-icon { font-size: 24px; margin-bottom: 10px; color: var(--accent-cyan); }
+  .card-title { font-size: 18px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; }
+  .card-body { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .card-body ul { list-style: none; }
+  .card-body li { margin-bottom: 6px; position: relative; padding-left: 14px; }
+  .card-body li::before { content: "•"; position: absolute; left: 0; color: var(--accent-cyan); font-weight: bold; }
+
+  /* Title Slide Styling */
+  .title-hero { text-align: center; margin: auto; display: flex; flex-direction: column; align-items: center; }
+  .hero-logo { font-size: 64px; font-weight: 900; letter-spacing: 6px; color: var(--accent-cyan); text-shadow: 0 0 30px rgba(0,229,255,0.4); }
+  .hero-tagline { font-size: 22px; color: #FFFFFF; margin-top: 12px; font-weight: 500; }
+  .hero-sub { font-size: 15px; color: var(--text-muted); margin-top: 8px; }
+  .hero-badges { display: flex; gap: 16px; margin-top: 35px; }
+  .badge { background: rgba(0, 229, 255, 0.1); border: 1px solid var(--accent-cyan); padding: 8px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--accent-cyan); }
+
+  /* Workflow & Diagram */
+  .flow-container { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 10px; }
+  .flow-step { background: var(--card-navy); border: 1px solid var(--accent-cyan); border-radius: 10px; padding: 18px 12px; flex: 1; text-align: center; }
+  .flow-arrow { color: var(--accent-cyan); font-size: 20px; font-weight: bold; }
+
+  /* Navigation Bar */
+  .controls {
+    width: 100%;
+    max-width: 1100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding: 10px 0;
+  }
+  .btn {
+    background: var(--card-navy);
+    color: var(--accent-cyan);
+    border: 1px solid var(--accent-cyan);
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 15px rgba(0,229,255,0.4); }
+  .slide-counter { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+  .notes-panel {
+    width: 100%;
+    max-width: 1100px;
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+  .notes-tag { font-weight: 700; color: var(--accent-cyan); margin-bottom: 4px; display: block; font-size: 12px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="deck-container">
+  
+  <!-- Slide 1 -->
+  <div class="slide active" id="slide-1" data-notes="Good morning judges. Every second, millions of unverified claims circulate online. TruthLens is our AI-driven, explainable misinformation detection system designed to empower everyday internet users to verify news before it causes societal harm.">
+    <div class="title-hero">
+      <div class="hero-logo">TRUTHLENS</div>
+      <div class="hero-tagline">AI-Powered Fake News Detection System</div>
+      <div class="hero-sub">Detecting Misinformation Through Explainable Artificial Intelligence</div>
+      <div class="hero-badges">
+        <div class="badge">National AI Hackathon 2026</div>
+        <div class="badge">Theme: AI for Social Impact</div>
+        <div class="badge">Tech: Python | Scikit-Learn | NLP | Streamlit</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2 -->
+  <div class="slide" id="slide-2" data-notes="False news travels nearly 6x faster than truth because it leverages outrage and fear. With 1-click forwards on WhatsApp, rumors become facts in minutes before debunking can even begin.">
+    <div class="slide-header">
+      <div class="slide-tag">Problem Context</div>
+      <div class="slide-title">The Real-World Crisis: The Infodemic</div>
+      <div class="slide-subtitle">How unchecked digital misinformation causes immediate real-world damage</div>
+    </div>
+    <div class="slide-content">
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-icon">⚡</div>
+          <div class="card-title">Viral Velocity</div>
+          <div class="card-body">Misinformation spreads 6x faster than factual reports. Emotional triggers drive 70% higher retweet and forward rates.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📱</div>
+          <div class="card-title">Zero Friction</div>
+          <div class="card-body">Encrypted messaging apps like WhatsApp allow 1-click viral forwarding to thousands of users with zero verification.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌪️</div>
+          <div class="card-title">Public Panic</div>
+          <div class="card-body">Fake remedies in health emergencies, manipulated election rumors, and fraudulent stock movements trigger panic.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📉</div>
+          <div class="card-title">Erosion of Trust</div>
+          <div class="card-body">When citizens cannot distinguish truth from fiction, democratic discourse and institutional trust crumble.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3 -->
+  <div class="slide" id="slide-3" data-notes="Manual fact-checkers do heroic work, but they take hours or days to verify a claim that spread in seconds. The world needs an instant, automated first-line triage tool.">
+    <div class="slide-header">
+      <div class="slide-tag">Problem Statement</div>
+      <div class="slide-title">The Verification Void</div>
+      <div class="slide-subtitle">Human fact-checking cannot scale to internet velocity</div>
+    </div>
+    <div class="slide-content">
+      <div class="grid-2">
+        <div class="card" style="border-color: #ef4444;">
+          <div class="card-title" style="color: #ef4444;">Existing Manual Fact-Checking</div>
+          <div class="card-body">
+            <ul>
+              <li><strong>High Latency:</strong> Takes hours to days to research and publish debunks.</li>
+              <li><strong>Unscalable:</strong> A team can only verify dozens of stories per week.</li>
+              <li><strong>Point-of-Read Disconnect:</strong> Fact-check articles rarely reach the victims of the original lie.</li>
+              <li><strong>Post-Hoc Damage:</strong> Debunking arrives long after viral spread is complete.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card" style="border-color: var(--accent-cyan);">
+          <div class="card-title" style="color: var(--accent-cyan);">The Unmet Need (TruthLens)</div>
+          <div class="card-body">
+            <ul>
+              <li><strong>Instant First-Line Screening:</strong> Real-time linguistic analysis in under 150ms.</li>
+              <li><strong>Hyper-Scalable:</strong> Can analyze thousands of user-submitted articles concurrently.</li>
+              <li><strong>Transparent & Explainable:</strong> Highlights linguistic red flags directly.</li>
+              <li><strong>Accessible:</strong> Free, intuitive web app accessible to non-technical users.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4 -->
+  <div class="slide" id="slide-4" data-notes="TruthLens provides a tri-state classification—Real, Fake, or Uncertain—with a calibrated confidence score and word-level explainability to keep AI accountable.">
+    <div class="slide-header">
+      <div class="slide-tag">Proposed Solution</div>
+      <div class="slide-title">Introducing TruthLens</div>
+      <div class="slide-subtitle">Transparent, accessible, AI-driven misinformation screening</div>
+    </div>
+    <div class="slide-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">1. Tri-State Classification</div>
+          <div class="card-body">Classifies articles into <strong>REAL</strong>, <strong>FAKE</strong>, or <strong>UNCERTAIN</strong>. Eliminates forced binary guessing when model confidence is borderline (45%–55%).</div>
+        </div>
+        <div class="card">
+          <div class="card-title">2. Calibrated Confidence Dial</div>
+          <div class="card-body">Outputs transparent probabilistic confidence (e.g., 92% strong confidence vs 54% marginal boundary) rather than opaque binary verdicts.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">3. Explainable AI (XAI) Tokens</div>
+          <div class="card-body">Surfaces top influential keywords and sensationalist cues that guided the model's decision, educating users on clickbait linguistics.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">4. Responsible AI Guardrails</div>
+          <div class="card-body">Prominent disclaimer reminding users that AI prediction is a linguistic screening tool, not an absolute guarantee of historical fact.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5 -->
+  <div class="slide" id="slide-5" data-notes="Here is the computational pipeline: text normalization, TF-IDF n-gram transformation, linear classifier inference, uncertainty filtering, and dynamic dashboard rendering.">
+    <div class="slide-header">
+      <div class="slide-tag">Workflow</div>
+      <div class="slide-title">How It Works: End-to-End Pipeline</div>
+      <div class="slide-subtitle">From raw unverified text to explainable output in &lt; 150ms</div>
+    </div>
+    <div class="slide-content">
+      <div class="flow-container">
+        <div class="flow-step">
+          <div class="card-title" style="font-size:15px;">1. User Input</div>
+          <div class="card-body" style="font-size:12px;">Headline or full article pasted into web UI</div>
+        </div>
+        <div class="flow-arrow">➔</div>
+        <div class="flow-step">
+          <div class="card-title" style="font-size:15px;">2. NLP Preprocessing</div>
+          <div class="card-body" style="font-size:12px;">Regex cleaning, lowercasing, stopword filtering</div>
+        </div>
+        <div class="flow-arrow">➔</div>
+        <div class="flow-step">
+          <div class="card-title" style="font-size:15px;">3. TF-IDF N-grams</div>
+          <div class="card-body" style="font-size:12px;">Transforms text into sparse frequency feature space</div>
+        </div>
+        <div class="flow-arrow">➔</div>
+        <div class="flow-step">
+          <div class="card-title" style="font-size:15px;">4. ML Classifier</div>
+          <div class="card-body" style="font-size:12px;">Linear probability weighting & decision bounds</div>
+        </div>
+        <div class="flow-arrow">➔</div>
+        <div class="flow-step">
+          <div class="card-title" style="font-size:15px;">5. Output & XAI</div>
+          <div class="card-body" style="font-size:12px;">Confidence score, keyword influence & safety notice</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 6 -->
+  <div class="slide" id="slide-6" data-notes="We chose a CPU-efficient, interpretable stack: Python, Scikit-Learn, and TF-IDF with Streamlit. This keeps deployment costs near zero and enables instant latency.">
+    <div class="slide-header">
+      <div class="slide-tag">Engineering</div>
+      <div class="slide-title">Technology Stack</div>
+      <div class="slide-subtitle">Optimized for high throughput, sub-150ms latency, and zero GPU overhead</div>
+    </div>
+    <div class="slide-content">
+      <div class="grid-6">
+        <div class="card">
+          <div class="card-title">Python 3.10+</div>
+          <div class="card-body">Robust, mature ecosystem for data science and machine learning.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Pandas & NumPy</div>
+          <div class="card-body">Vectorized matrix manipulation and high-speed data frame processing.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Scikit-Learn</div>
+          <div class="card-body">Logistic Regression, Naive Bayes, cross-validation, and metrics.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">TF-IDF Vectorizer</div>
+          <div class="card-body">Unigram & bigram feature space balancing term frequency and rarity.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Streamlit UI</div>
+          <div class="card-body">Reactive web frontend delivering rapid interactive prototyping.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Matplotlib & Seaborn</div>
+          <div class="card-body">Confusion matrix, ROC-AUC curves, and statistical visualizations.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 7 -->
+  <div class="slide" id="slide-7" data-notes="Our architecture cleanly separates presentation, sanitization, and the ML intelligence core, allowing seamless model updating without touching the frontend.">
+    <div class="slide-header">
+      <div class="slide-tag">Architecture</div>
+      <div class="slide-title">System Architecture</div>
+      <div class="slide-subtitle">Modular 3-tier architecture ensuring separation of concerns</div>
+    </div>
+    <div class="slide-content">
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title" style="color:var(--accent-cyan);">Client Tier (Streamlit)</div>
+          <div class="card-body">
+            <ul>
+              <li>Reactive text submission window</li>
+              <li>Dynamic probability dial</li>
+              <li>Color-coded keyword influence cloud</li>
+              <li>Session prediction history</li>
+              <li>Safety disclaimer banner</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:var(--accent-cyan);">Processing Tier</div>
+          <div class="card-body">
+            <ul>
+              <li>Input validation and sanitation</li>
+              <li>Regex text normalizer</li>
+              <li>Uncertainty threshold router</li>
+              <li>Feature importance extractor</li>
+              <li>JSON response formatter</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="color:var(--accent-cyan);">Model & Intelligence Tier</div>
+          <div class="card-body">
+            <ul>
+              <li>Pre-fitted TF-IDF feature vocabulary</li>
+              <li>Optimized classifier weights (.joblib)</li>
+              <li>Leakage-free training pipelines</li>
+              <li>Sub-150ms inference engine</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8 -->
+  <div class="slide" id="slide-8" data-notes="What sets TruthLens apart is explainability and honest uncertainty. We don't guess blindly on ambiguous texts, and we highlight linguistic red flags.">
+    <div class="slide-header">
+      <div class="slide-tag">Innovation</div>
+      <div class="slide-title">Innovation & Unique Value Proposition</div>
+      <div class="slide-subtitle">Moving from opaque black-box classifiers to transparent, trustworthy AI</div>
+    </div>
+    <div class="slide-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">Explainable AI (XAI) for Text</div>
+          <div class="card-body">Instead of a silent verdict, TruthLens extracts and visualizes influential tokens, teaching users to recognize sensationalist language.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Tri-State Uncertainty Bounds</div>
+          <div class="card-body">Most systems force a 50.1% probability into a definite 'Fake' or 'Real'. TruthLens flags ambiguous items as <strong>UNCERTAIN</strong>.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Zero Data Leakage Pipeline</div>
+          <div class="card-body">TF-IDF vectorizer is strictly fitted exclusively on training splits, ensuring genuine, unbiased real-world generalization.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">Low Carbon & Edge Feasible</div>
+          <div class="card-body">No energy-intensive GPUs required. TruthLens can run on standard micro-servers or edge environments with minimal footprint.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 9 -->
+  <div class="slide" id="slide-9" data-notes="TruthLens empowers multiple audiences: families verifying WhatsApp messages, journalists triaging tips, and educators teaching digital literacy.">
+    <div class="slide-header">
+      <div class="slide-tag">Impact</div>
+      <div class="slide-title">Practical Applications & Social Impact</div>
+      <div class="slide-subtitle">Democratizing critical analysis across digital society</div>
+    </div>
+    <div class="slide-content">
+      <div class="grid-4">
+        <div class="card">
+          <div class="card-icon">👥</div>
+          <div class="card-title">General Citizens</div>
+          <div class="card-body">A 5-second sanity check before clicking 'Forward' on WhatsApp and Telegram groups.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">📰</div>
+          <div class="card-title">Newsrooms</div>
+          <div class="card-body">Rapid first-pass triage for thousands of community-submitted story tips and breaking leads.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🎓</div>
+          <div class="card-title">Educators</div>
+          <div class="card-body">Classroom tool to teach students how sensationalism and linguistic manipulation work.</div>
+        </div>
+        <div class="card">
+          <div class="card-icon">🌐</div>
+          <div class="card-title">Public Health</div>
+          <div class="card-body">Curtails dangerous viral health remedies and panic rumors during regional crises.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 10 -->
+  <div class="slide" id="slide-10" data-notes="Our implementation followed a disciplined 6-stage engineering roadmap, testing rigorously on unseen current news to guarantee real-world generalization.">
+    <div class="slide-header">
+      <div class="slide-tag">Implementation</div>
+      <div class="slide-title">Feasibility & Engineering Roadmap</div>
+      <div class="slide-subtitle">Disciplined, reproducible 6-stage software and ML lifecycle</div>
+    </div>
+    <div class="slide-content">
+      <div class="grid-6">
+        <div class="card"><div class="card-title">Stage 1: Dataset</div><div class="card-body">Curate balanced real/fake datasets (ISOT/WELFake).</div></div>
+        <div class="card"><div class="card-title">Stage 2: Cleaning</div><div class="card-body">Leakage-free NLP preprocessing and token normalization.</div></div>
+        <div class="card"><div class="card-title">Stage 3: Vectorization</div><div class="card-body">TF-IDF unigram & bigram feature space representation.</div></div>
+        <div class="card"><div class="card-title">Stage 4: Modeling</div><div class="card-body">Benchmark Logistic Regression vs Naive Bayes.</div></div>
+        <div class="card"><div class="card-title">Stage 5: Streamlit App</div><div class="card-body">Build interactive UI with confidence meters & XAI.</div></div>
+        <div class="card"><div class="card-title">Stage 6: Validation</div><div class="card-body">Stress-test against unseen contemporary news.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 11 -->
+  <div class="slide" id="slide-11" data-notes="For TruthLens 2.0, we will expand to regional languages, multimodal image verification, domain reputation scoring, and an ambient browser extension.">
+    <div class="slide-header">
+      <div class="slide-tag">Future Scope</div>
+      <div class="slide-title">TruthLens 2.0 Roadmap</div>
+      <div class="slide-subtitle">Expanding across languages, modalities, and browser platforms</div>
+    </div>
+    <div class="slide-content">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title">🌐 Multilingual Detection</div>
+          <div class="card-body">Expanding NLP models to Hindi and regional vernaculars where misinformation spreads with greatest severity.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🖼️ Multimodal AI</div>
+          <div class="card-body">Integrating Computer Vision models to flag altered images, synthetic deepfakes, and recycled out-of-context video clips.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🧩 Browser Extension</div>
+          <div class="card-body">Real-time overlay on Twitter/X, Reddit, and WhatsApp Web to flag suspicious claims directly inside social feeds.</div>
+        </div>
+        <div class="card">
+          <div class="card-title">🛡️ Publisher Credibility Index</div>
+          <div class="card-body">Automated cross-referencing with domain age, WHOIS records, and verified news wire fact-checking APIs.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 12 -->
+  <div class="slide" id="slide-12" data-notes="Don't just read the news. Verify it. We invite you to test TruthLens, inspect our codebase, and join us in building a more truthful digital world. Thank you!">
+    <div class="title-hero">
+      <div class="hero-logo" style="font-size:42px;">"Don't just read the news. Verify it."</div>
+      <div class="hero-tagline" style="color:var(--accent-cyan); font-size:26px; margin-top:20px;">TRUTHLENS</div>
+      <div class="hero-sub" style="font-size:16px;">AI-Powered Fake News Detection System</div>
+      <div class="hero-badges" style="margin-top:25px;">
+        <div class="badge">Accessible Screening</div>
+        <div class="badge">Explainable AI</div>
+        <div class="badge">Responsible Bounds</div>
+      </div>
+      <div style="margin-top: 35px; font-size: 18px; font-weight: 700; color: #FFFFFF;">
+        Thank You! We Welcome Your Questions & Feedback.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Presentation Controls -->
+<div class="controls">
+  <button class="btn" onclick="prevSlide()">◀ Previous</button>
+  <div class="slide-counter" id="counter">Slide 1 of 12</div>
+  <button class="btn" onclick="nextSlide()">Next ▶</button>
+</div>
+
+<!-- Speaker Notes Drawer -->
+<div class="notes-panel">
+  <span class="notes-tag">🎙️ Speaker Pitch Script (Target: 30–45s)</span>
+  <p id="speaker-notes"></p>
+</div>
+
+<script>
+  let currentSlide = 1;
+  const totalSlides = 12;
+
+  function updateSlide() {
+    document.querySelectorAll('.slide').forEach((s, idx) => {
+      s.classList.toggle('active', idx + 1 === currentSlide);
+    });
+    document.getElementById('counter').innerText = `Slide ${currentSlide} of ${totalSlides}`;
+    const activeSlide = document.getElementById(`slide-${currentSlide}`);
+    document.getElementById('speaker-notes').innerText = activeSlide.getAttribute('data-notes') || '';
+  }
+
+  function nextSlide() {
+    if (currentSlide < totalSlides) {
+      currentSlide++;
+      updateSlide();
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 1) {
+      currentSlide--;
+      updateSlide();
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+    if (e.key === 'ArrowLeft') prevSlide();
+  });
+
+  updateSlide();
+</script>
+
+</body>
+</html>
